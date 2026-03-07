@@ -1,0 +1,53 @@
+build:
+  maxIssues: 0
+  weights:
+    complexity: 2
+    LongParameterList: 1
+    style: 1
+    comments: 0
+
+complexity:
+  active: true
+  ComplexCondition:
+    active: true
+    threshold: 3
+  TooManyFunctions:
+    active: true
+    threshold: 11
+
+style:
+  active: true
+  MagicNumber:
+    active: false
+  NewLineAtEndOfFile:
+    active: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludeClassStatements: true
+
+comments:
+  active: true
+  CommentOverPrivateFunction:
+    active: true
+    allowedPattern: "TODO|FIXME|Stub"
+
+empty-blocks:
+  active: true
+  EmptyCatchBlock:
+    active: true
+    allowedExceptionNameRegex: "^(_|ignore.*|expected.*)$"
+
+potential-bugs:
+  active: true
+  UnsafeCast:
+    active: true
+    exceptionClasses: "java.lang.ClassCastException"
+
+performance:
+  active: true
+  ForEachOnRange:
+    active: true
+
+formatting:
+  active: false

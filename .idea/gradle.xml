@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
@@ -9,6 +10,26 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/core-common" />
+            <option value="$PROJECT_DIR$/core/core-database" />
+            <option value="$PROJECT_DIR$/core/core-datastore" />
+            <option value="$PROJECT_DIR$/core/core-network" />
+            <option value="$PROJECT_DIR$/core/core-security" />
+            <option value="$PROJECT_DIR$/core/core-ui" />
+            <option value="$PROJECT_DIR$/data" />
+            <option value="$PROJECT_DIR$/domain" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/feature-dapp" />
+            <option value="$PROJECT_DIR$/feature/feature-history" />
+            <option value="$PROJECT_DIR$/feature/feature-home" />
+            <option value="$PROJECT_DIR$/feature/feature-nft" />
+            <option value="$PROJECT_DIR$/feature/feature-onboarding" />
+            <option value="$PROJECT_DIR$/feature/feature-receive" />
+            <option value="$PROJECT_DIR$/feature/feature-send" />
+            <option value="$PROJECT_DIR$/feature/feature-settings" />
+            <option value="$PROJECT_DIR$/feature/feature-swap" />
+            <option value="$PROJECT_DIR$/feature/feature-tokens" />
           </set>
         </option>
       </GradleProjectSettings>
