@@ -1,4 +1,3 @@
-```markdown
 # NexVault — Architecture & Technology Stack
 
 ## 1. Architecture Pattern
@@ -53,56 +52,57 @@ provides concrete implementations injected via Hilt.
 
 ### 2.3 Networking & Blockchain
 
-| Library            | Version (approx.) | Purpose                                          |
+| Library            | Version (actual)   | Purpose                                          |
 |--------------------|--------------------|--------------------------------------------------|
-| Retrofit 2         | 2.9+               | REST API client (CoinGecko, 1inch, NFT metadata) |
-| OkHttp 4           | 4.12+              | HTTP client, logging interceptor                  |
-| Moshi               | 1.15+              | JSON serialization (kotlin-codegen)              |
-| Web3j (Android)    | 4.10+              | Ethereum JSON-RPC, transaction signing, ABI       |
-| WalletConnect v2   | latest BOM         | DApp connection protocol                          |
-| kotlinx-serialization | 1.6+           | Backup serialization for data classes             |
+| Retrofit 2         | 3.0.0              | REST API client (CoinGecko, 1inch, NFT metadata) |
+| OkHttp 5           | 5.3.2              | HTTP client, logging interceptor                 |
+| Moshi              | 1.15.2             | JSON serialization (kotlin-codegen)              |
+| Web3j (Android)    | 5.0.2              | Ethereum JSON-RPC, transaction signing, ABI      |
+| WalletConnect v2 BOM | 1.35.2           | DApp connection protocol                         |
+| kotlinx-serialization | 1.10.0         | Backup serialization for data classes            |
+| kethereum          | 0.86.0             | BIP39/BIP44 implementation                       |
 
 ### 2.4 Security
 
-| Library / API             | Purpose                                              |
-|---------------------------|------------------------------------------------------|
-| AndroidKeyStore           | Hardware-backed key wrapping for mnemonic encryption  |
-| Tink (Google)             | AEAD encryption primitives wrapping KeyStore          |
-| BIP39 (bitcoinj or custom)| Mnemonic generation / validation                     |
-| BIP32/BIP44               | HD wallet derivation (via Web3j or kethereum)         |
-| SQLCipher (optional)       | Encrypted Room database on-disk                      |
+| Library / API             | Version           | Purpose                                              |
+|---------------------------|-------------------|------------------------------------------------------|
+| AndroidKeyStore           | –                 | Hardware-backed key wrapping for mnemonic encryption  |
+| Tink (Google)             | 1.20.0            | AEAD encryption primitives wrapping KeyStore          |
+| BIP39 (via kethereum)     | 0.86.0            | Mnemonic generation / validation                     |
+| BIP32/BIP44 (via kethereum)| 0.86.0           | HD wallet derivation                                 |
+| SQLCipher (optional)      | –                 | Encrypted Room database on-disk                      |
 
 ### 2.5 UI & Media
 
-| Library       | Purpose                                     |
-|---------------|---------------------------------------------|
-| Coil Compose  | Async image loading (NFT thumbnails, icons) |
-| Lottie Compose| Animated illustrations (onboarding, success)|
-| Vico          | Chart library for portfolio value over time |
-| ZXing / ML Kit| QR code generation and scanning             |
-| Accompanist   | System UI controller, permissions            |
-| Shimmer       | Loading placeholder effects                  |
+| Library       | Version  | Purpose                                     |
+|---------------|----------|---------------------------------------------|
+| Coil Compose  | 2.7.0    | Async image loading (NFT thumbnails, icons) |
+| Lottie Compose| 6.7.1    | Animated illustrations (onboarding, success)|
+| Vico          | 3.0.3    | Chart library for portfolio value over time |
+| ZXing / ML Kit| 3.5.3 / 17.3.0 | QR code generation and scanning |
+| Accompanist   | 0.37.3   | System UI controller, permissions            |
+| Shimmer       | 1.2.0    | Loading placeholder effects                  |
 
 ### 2.6 Testing
 
-| Library                | Purpose                          |
-|------------------------|----------------------------------|
-| JUnit 5                | Unit tests                       |
-| Mockk                  | Kotlin-first mocking             |
-| Turbine                | Flow testing                     |
-| Compose UI Test        | Instrumented Compose UI tests    |
-| Truth                  | Fluent assertions                |
-| Hilt Testing           | DI-aware instrumented tests      |
-| Robolectric            | JVM-based Android unit tests     |
+| Library                | Version  | Purpose                          |
+|------------------------|----------|----------------------------------|
+| JUnit 5                | 6.0.3    | Unit tests                       |
+| Mockk                  | 1.14.9   | Kotlin-first mocking             |
+| Turbine                | 1.2.1    | Flow testing                     |
+| Compose UI Test        | 1.10.4   | Instrumented Compose UI tests    |
+| Truth                  | 1.4.5    | Fluent assertions                |
+| Hilt Testing           | 2.59.2   | DI-aware instrumented tests      |
+| Robolectric            | 4.16.1   | JVM-based Android unit tests     |
 
 ### 2.7 Code Quality
 
-| Tool          | Purpose                       |
-|---------------|-------------------------------|
-| Detekt        | Static analysis for Kotlin    |
-| ktlint        | Code formatting               |
-| Spotless      | Formatting enforcement        |
-| LeakCanary    | Memory leak detection (debug) |
+| Tool          | Version  | Purpose                       |
+|---------------|----------|-------------------------------|
+| Detekt        | 1.23.8   | Static analysis for Kotlin    |
+| ktlint        | 14.1.0   | Code formatting               |
+| Spotless      | 8.3.0    | Formatting enforcement        |
+| LeakCanary    | 2.14     | Memory leak detection (debug) |
 
 ## 3. Dependency Injection Graph (Hilt)
 
