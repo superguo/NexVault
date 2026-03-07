@@ -5,6 +5,15 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+//configurations.configureEach {
+//    resolutionStrategy.eachDependency {
+//        if (requested.group == "io.netty") {
+//            useVersion("4.1.115.Final")
+//            because("Force all Netty modules to a single patched version")
+//        }
+//    }
+//}
+
 android {
     namespace = "com.nexvault.wallet"
     compileSdk {
@@ -80,6 +89,12 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/FastDoubleParser-LICENSE"
+            excludes += "META-INF/FastDoubleParser-NOTICE"
+            excludes += "/META-INF/versions/9/io/netty/**"
+            excludes += "META-INF/io.netty.versions.properties"
         }
     }
 }
@@ -96,6 +111,7 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.material)
 
     // Navigation
     implementation(libs.bundles.compose.navigation)
