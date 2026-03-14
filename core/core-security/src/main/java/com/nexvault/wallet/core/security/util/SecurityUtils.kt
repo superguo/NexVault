@@ -84,7 +84,12 @@ object SecurityUtils {
         return buildString {
             append("0x")
             for (i in cleanAddress.indices) {
-                val hashChar = Character.digit(hash[i / 2], 16)
+                val hashByte = hash[i / 2].toInt()
+                val hashChar = if (hashByte and 0xf0 != 0) {
+                    (hashByte shr 4) and 0x0f
+                } else {
+                    hashByte and 0x0f
+                }
                 if (hashChar and 0x10 != 0 || cleanAddress[i].isUpperCase()) {
                     append(cleanAddress[i].uppercaseChar())
                 } else {

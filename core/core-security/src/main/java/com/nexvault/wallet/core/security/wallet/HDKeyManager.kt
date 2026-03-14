@@ -14,7 +14,7 @@ class HDKeyManager @Inject constructor() {
 
     companion object {
         const val BIP44_ETHEREUM_PATH = "m/44'/60'/0'/0/0"
-        private val HARDENED_BIT = 0x80000000
+        private const val HARDENED_BIT = 0x80000000.toInt()
     }
 
     fun deriveEthereumKeyPair(
@@ -26,9 +26,9 @@ class HDKeyManager @Inject constructor() {
 
         // BIP44 path: m/44'/60'/account'/0/address
         val path = intArrayOf(
-            44 or HARDENED_BIT,           // purpose - BIP44
-            60 or HARDENED_BIT,          // coin_type - Ethereum
-            accountIndex or HARDENED_BIT, // account
+            (44 or HARDENED_BIT).toInt(),           // purpose - BIP44
+            (60 or HARDENED_BIT).toInt(),          // coin_type - Ethereum
+            (accountIndex or HARDENED_BIT).toInt(), // account
             0,                            // change (external)
             addressIndex                  // address_index
         )
@@ -36,10 +36,11 @@ class HDKeyManager @Inject constructor() {
         val bip44KeyPair = Bip32ECKeyPair.deriveKeyPair(masterKeyPair, path)
 
         // Create a new ECKeyPair with the derived keys
-        val keyPair = ECKeyPair.create(bip44KeyPair.privateKeyBytes)
+        val privateKey = bip44KeyPair.privateKey
+        val keyPair = ECKeyPair.create(privateKey)
 
         // Secure wipe the sensitive key bytes
-        bip44KeyPair.privateKeyBytes.secureWipe()
+        privateKey.toByteArray().secureWipe()
 
         return keyPair
     }

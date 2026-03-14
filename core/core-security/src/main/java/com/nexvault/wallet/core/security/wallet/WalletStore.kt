@@ -5,6 +5,8 @@ import com.nexvault.wallet.core.security.encryption.DoubleEncryptedData
 import com.nexvault.wallet.core.security.encryption.EncryptionManager
 import com.nexvault.wallet.core.security.encryption.PasswordEncryptedData
 import com.nexvault.wallet.core.security.util.SecurityUtils
+import com.nexvault.wallet.core.security.util.SecurityUtils.toHex
+import com.nexvault.wallet.core.security.util.SecurityUtils.hexToByteArray
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
