@@ -1,8 +1,10 @@
 package com.nexvault.wallet.domain.model
 
 import com.nexvault.wallet.domain.model.common.DataResult
+import com.nexvault.wallet.domain.model.common.flatMap
 import com.nexvault.wallet.domain.model.common.getOrNull
 import com.nexvault.wallet.domain.model.common.getOrThrow
+import com.nexvault.wallet.domain.model.common.map
 import com.nexvault.wallet.domain.model.common.toDataResult
 import org.junit.Test
 import org.junit.Assert.*
