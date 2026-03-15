@@ -1,0 +1,38 @@
+---
+description: Run gradlew commands outside sandbox
+globs: *.gradle.kts
+alwaysApply: true
+---
+
+# Gradle Commands Outside Sandbox
+
+When running `./gradlew` commands that require network access or process spawning, ALWAYS use the `required_permissions: ["full_network"]` or `["all"]` parameter with the Shell tool.
+
+## Examples
+
+```kotlin
+// Running gradle compile (needs full_network)
+Shell(
+    command = "./gradlew :domain:compileKotlin",
+    required_permissions = ["full_network"],
+    block_until_ms = 300000,
+)
+
+// Running gradle tests (needs full_network)
+Shell(
+    command = "./gradlew :domain:test",
+    required_permissions = ["full_network"],
+    block_until_ms = 300000,
+)
+
+// Running assembleDebug (needs full_network)
+Shell(
+    command = "./gradlew assembleDebug",
+    required_permissions = ["full_network"],
+    block_until_ms = 600000,
+)
+```
+
+## Why This Is Needed
+
+The sandbox restricts process spawning and network access. Gradle wrapper downloads dependencies and spawns JVM processes, which require permissions outside the sandbox. Without `required_permissions`, commands will fail with "Operation not permitted" or network errors.
