@@ -147,4 +147,9 @@ class WalletStore @Inject constructor(
     suspend fun wipeAll() = withContext(Dispatchers.IO) {
         walletDir.listFiles()?.forEach { it.delete() }
     }
+
+    suspend fun wipeWalletData(walletId: String) = withContext(Dispatchers.IO) {
+        // For single-file design, wipe all (only one wallet supported at a time)
+        walletDir.listFiles()?.forEach { it.delete() }
+    }
 }

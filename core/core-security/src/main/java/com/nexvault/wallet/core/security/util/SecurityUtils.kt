@@ -32,6 +32,8 @@ object SecureUtils {
 object SecurityUtils {
 
     private val HEX_CHARS = "0123456789abcdef".toCharArray()
+    private const val HASH_ITERATIONS = 65536
+    private const val HASH_LENGTH = 32
 
     fun generateSecureRandom(length: Int): ByteArray {
         val random = SecureRandom()
@@ -105,6 +107,46 @@ object SecurityUtils {
 
         val hexPart = address.substring(2)
         return hexPart.all { it.isDigit() || it in 'a'..'f' || it in 'A'..'F' }
+    }
+
+    fun hashPassword(password: String): String {
+        val salt = generateSecureRandom(16)
+        val spec = javax.crypto.spec.PBEKeySpec(
+            password.toCharArray(),
+            salt,
+            HASH_ITERATIONS,
+            HASH_LENGTH * 8
+        )
+        val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val hash = factory.generateSecret(spec).encoded
+
+        // Combine salt and hash: salt(16 bytes) + hash(32 bytes)
+        val result = ByteArray(salt.size + hash.size)
+        System.arraycopy(salt, 0, result, 0, salt.size)
+        System.arraycopy(hash, 0, result, salt.size, hash.size)
+
+        return result.toHex()
+    }
+
+    fun verifyPassword(password: String, storedHashHex: String): Boolean {
+        return try {
+            val storedHashBytes = storedHashHex.hexToByteArray()
+            val salt = storedHashBytes.copyOfRange(0, 16)
+            val expectedHash = storedHashBytes.copyOfRange(16, storedHashBytes.size)
+
+            val spec = javax.crypto.spec.PBEKeySpec(
+                password.toCharArray(),
+                salt,
+                HASH_ITERATIONS,
+                HASH_LENGTH * 8
+            )
+            val factory = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val actualHash = factory.generateSecret(spec).encoded
+
+            constantTimeEquals(expectedHash, actualHash)
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun ByteArray.sha3Keccak(): ByteArray {

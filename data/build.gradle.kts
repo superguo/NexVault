@@ -59,8 +59,17 @@ dependencies {
     implementation(project(":core:core-datastore"))
     implementation(project(":core:core-security"))
 
+    // Web3j for Ethereum address derivation
+    implementation(libs.web3j.android)
+
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.truth)
+    testImplementation(libs.mockk)
+    testImplementation(libs.javax.inject)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
