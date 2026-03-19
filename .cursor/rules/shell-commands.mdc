@@ -1,0 +1,48 @@
+---
+description: Allow cd, tail, head, grep commands outside sandbox
+globs: "*"
+alwaysApply: true
+---
+
+# Shell Commands Outside Sandbox
+
+When running the following shell commands, ALWAYS use the `required_permissions: ["all"]` parameter with the Shell tool:
+
+## Commands
+
+- `cd` - Change directory (needed for navigation)
+- `tail` - Display file contents from the end
+- `head` - Display file contents from the beginning
+- `grep` - Search patterns in files
+
+## Examples
+
+```kotlin
+// Changing directory (needs all permissions)
+Shell(
+    command = "cd /path/to/directory",
+    required_permissions: ["all"],
+)
+
+// Using tail to read file (needs all permissions)
+Shell(
+    command = "tail -n 50 /path/to/file",
+    required_permissions: ["all"],
+)
+
+// Using head to read file (needs all permissions)
+Shell(
+    command = "head -n 50 /path/to/file",
+    required_permissions: ["all"],
+)
+
+// Using grep to search (needs all permissions)
+Shell(
+    command = "grep -r \"pattern\" /path/to/directory",
+    required_permissions: ["all"],
+)
+```
+
+## Why This Is Needed
+
+The sandbox restricts process spawning and certain shell operations. These commonly-used commands may require permissions outside the sandbox to function properly. Without `required_permissions: ["all"]`, commands may fail with "Operation not permitted" errors.
