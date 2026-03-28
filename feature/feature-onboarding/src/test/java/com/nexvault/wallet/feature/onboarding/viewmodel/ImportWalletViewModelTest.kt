@@ -1,0 +1,134 @@
+package com.nexvault.wallet.feature.onboarding.viewmodel
+
+import com.nexvault.wallet.domain.model.auth.WalletCreationResult
+import com.nexvault.wallet.domain.model.common.DataResult
+import com.nexvault.wallet.domain.usecase.wallet.ImportWalletUseCase
+import io.mockk.coEvery
+import io.mockk.mockk
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+
+class ImportWalletViewModelTest {
+
+    private lateinit var importWalletUseCase: ImportWalletUseCase
+    private lateinit var viewModel: ImportWalletViewModel
+
+    private val validMnemonic12 = "apple brave crane delta eagle frost grape house ivory jump king lamp"
+    private val validMnemonic24 = "apple brave crane delta eagle frost grape house ivory jump king lamp moon peace quiet brave delta eagle float glad gift knee river peace"
+
+    @Before
+    fun setup() {
+        importWalletUseCase = mockk()
+        viewModel = ImportWalletViewModel(importWalletUseCase)
+    }
+
+    @Test
+    fun initialStateIsCorrect() {
+        val state = viewModel.uiState.value
+        assertEquals(ImportWalletViewModel.ImportMode.MNEMONIC, state.importMode)
+        assertEquals("", state.mnemonicInput)
+        assertEquals("", state.privateKeyInput)
+        assertNull(state.mnemonicError)
+        assertNull(state.privateKeyError)
+        assertFalse(state.isLoading)
+        assertNull(state.generalError)
+        assertFalse(state.isImportEnabled)
+    }
+
+    @Test
+    fun modeSwitchClearsErrors() {
+        viewModel.onMnemonicInputChanged("word1 word2 123number word4 word5 word6 word7 word8 word9 word10 word11 word12")
+        assertTrue(viewModel.uiState.value.mnemonicError != null)
+
+        viewModel.onImportModeChanged(ImportWalletViewModel.ImportMode.PRIVATE_KEY)
+
+        val state = viewModel.uiState.value
+        assertEquals(ImportWalletViewModel.ImportMode.PRIVATE_KEY, state.importMode)
+        assertNull(state.mnemonicError)
+        assertNull(state.privateKeyError)
+        assertNull(state.generalError)
+    }
+
+    @Test
+    fun valid12WordMnemonicEnablesImport() {
+        viewModel.onMnemonicInputChanged(validMnemonic12)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isImportEnabled)
+        assertNull(state.mnemonicError)
+    }
+
+    @Test
+    fun valid24WordMnemonicEnablesImport() {
+        viewModel.onMnemonicInputChanged(validMnemonic24)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isImportEnabled)
+        assertNull(state.mnemonicError)
+    }
+
+    @Test
+    fun incompleteMnemonicDisablesImport() {
+        val incomplete = "apple brave crane delta eagle frost grape house ivory jump king"
+        viewModel.onMnemonicInputChanged(incomplete)
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isImportEnabled)
+    }
+
+    @Test
+    fun mnemonicWithInvalidCharsShowsError() {
+        viewModel.onMnemonicInputChanged("word1 word2 123number word4 word5 word6 word7 word8 word9 word10 word11 word12")
+
+        val state = viewModel.uiState.value
+        assertTrue(state.mnemonicError?.contains("only letters") == true)
+        assertFalse(state.isImportEnabled)
+    }
+
+    @Test
+    fun mnemonicWithTooManyWordsShowsError() {
+        val tooMany = "apple brave crane delta eagle frost grape house ivory jump king lamp moon peace quiet brave delta eagle float glad gift knee river peace quiet extra"
+        viewModel.onMnemonicInputChanged(tooMany)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.mnemonicError?.contains("Too many words") == true)
+    }
+
+    @Test
+    fun validPrivateKeyEnablesImport() {
+        val validKey = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
+
+        viewModel.onImportModeChanged(ImportWalletViewModel.ImportMode.PRIVATE_KEY)
+        viewModel.onPrivateKeyInputChanged(validKey)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isImportEnabled)
+        assertNull(state.privateKeyError)
+    }
+
+    @Test
+    fun privateKeyWith0xPrefixWorks() {
+        val validKeyWithPrefix = "0xa1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"
+
+        viewModel.onImportModeChanged(ImportWalletViewModel.ImportMode.PRIVATE_KEY)
+        viewModel.onPrivateKeyInputChanged(validKeyWithPrefix)
+
+        val state = viewModel.uiState.value
+        assertTrue(state.isImportEnabled)
+    }
+
+    @Test
+    fun shortPrivateKeyDisablesImport() {
+        val shortKey = "a1b2c3d4e5f6a1b2c3d4e5f6"
+
+        viewModel.onImportModeChanged(ImportWalletViewModel.ImportMode.PRIVATE_KEY)
+        viewModel.onPrivateKeyInputChanged(shortKey)
+
+        val state = viewModel.uiState.value
+        assertFalse(state.isImportEnabled)
+    }
+}
