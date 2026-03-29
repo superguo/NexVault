@@ -1,83 +1,87 @@
 package com.nexvault.wallet
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.nexvault.wallet.core.ui.components.GradientBackground
-import com.nexvault.wallet.core.ui.components.NexVaultButton
-import com.nexvault.wallet.core.ui.components.NexVaultCard
-import com.nexvault.wallet.core.ui.components.PriceChangeChip
-import com.nexvault.wallet.core.ui.components.ShimmerPlaceholder
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.nexvault.wallet.core.datastore.model.AutoLockTimeout
+import com.nexvault.wallet.core.datastore.preferences.UserPreferencesDataStore
+import com.nexvault.wallet.core.datastore.security.SecurityPreferencesDataStore
+import com.nexvault.wallet.core.security.biometric.BiometricHelper
 import com.nexvault.wallet.core.ui.theme.NexVaultTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
+
+    @Inject
+    lateinit var biometricHelper: BiometricHelper
+
+    @Inject
+    lateinit var userPreferences: UserPreferencesDataStore
+
+    @Inject
+    lateinit var securityPreferences: SecurityPreferencesDataStore
+
+    private val _isAuthenticated = MutableStateFlow(false)
+    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated.asStateFlow()
+
+    private var backgroundedAt: Long = 0L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             NexVaultTheme(darkTheme = true) {
-                ThemePreviewScreen()
+                NexVaultApp(
+                    biometricHelper = biometricHelper,
+                    isAuthenticated = isAuthenticated,
+                    onAuthSuccess = { _isAuthenticated.value = true },
+                    onAuthRequired = { _isAuthenticated.value = false },
+                    securityPreferences = securityPreferences,
+                )
             }
         }
     }
-}
 
-@Composable
-private fun ThemePreviewScreen() {
-    GradientBackground {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            NexVaultCard {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        text = "NexVault Wallet",
-                        style = MaterialTheme.typography.displayLarge,
-                    )
+    override fun onStop() {
+        super.onStop()
+        if (_isAuthenticated.value) {
+            backgroundedAt = System.currentTimeMillis()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (backgroundedAt > 0L && _isAuthenticated.value) {
+            val elapsedMs = System.currentTimeMillis() - backgroundedAt
+
+            lifecycleScope.launch {
+                val autoLockTimeout = userPreferences.autoLockTimeout.first()
+
+                val timeoutMillis = when (autoLockTimeout) {
+                    AutoLockTimeout.NEVER -> Long.MAX_VALUE
+                    AutoLockTimeout.IMMEDIATE -> 0L
+                    else -> autoLockTimeout.seconds * 1000L
                 }
+
+                if (elapsedMs > timeoutMillis) {
+                    _isAuthenticated.value = false
+                }
+                backgroundedAt = 0L
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            NexVaultButton(
-                text = "Get Started",
-                onClick = { },
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            PriceChangeChip(
-                percentage = "+5.24%",
-                isPositive = true,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ShimmerPlaceholder(
-                width = 200.dp,
-                height = 20.dp,
-            )
+        } else {
+            backgroundedAt = 0L
         }
     }
 }

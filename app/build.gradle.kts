@@ -139,6 +139,7 @@ dependencies {
     implementation(project(":feature:feature-nft"))
     implementation(project(":feature:feature-swap"))
     implementation(project(":feature:feature-settings"))
+    implementation(project(":feature:feature-auth"))
 
     // Testing
     testImplementation(libs.junit)
