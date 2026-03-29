@@ -54,8 +54,20 @@ dependencies {
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Domain module for Chain model and repository interfaces
+    implementation(project(":domain"))
+
+    // Core common for DataResult wrapper
+    implementation(project(":core:core-common"))
+
     // Testing
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.truth)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

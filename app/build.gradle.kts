@@ -52,6 +52,11 @@ android {
         )
         buildConfigField(
             "String",
+            "ETHERSCAN_API_KEY",
+            "\"${project.findProperty("ETHERSCAN_API_KEY") ?: ""}\""
+        )
+        buildConfigField(
+            "String",
             "WALLETCONNECT_PROJECT_ID",
             "\"${project.findProperty("WALLETCONNECT_PROJECT_ID") ?: ""}\""
         )

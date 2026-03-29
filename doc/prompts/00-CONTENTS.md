@@ -7,7 +7,7 @@ Prompt 6:  Data Layer — Repository Implementations (Task 1.6)
 Prompt 7:  Onboarding Feature — Welcome, Create Wallet & Verify Mnemonic (Task 1.7, Part 1)
 Prompt 8:  Onboarding Feature — Import Wallet, Set PIN & Complete Navigation (Task 1.7, Part 2).
 Prompt 9:  Auth / Unlock Feature (Task 1.8)
-Prompt 10:  Main Scaffold & Navigation Shell (Task 1.9)
+Prompt 10: Main Scaffold & Navigation Shell (Task 1.9)
 Prompt 11: Network Module — Retrofit, Web3j, APIs (Task 2.1)
 Prompt 12: Database Module — Room Entities & DAOs (Task 2.2)
 Prompt 13: Chain Management (Task 2.3)
