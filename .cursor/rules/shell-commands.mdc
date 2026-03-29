@@ -1,12 +1,12 @@
 ---
-description: Allow cd, tail, head, grep commands outside sandbox
+description: Allow cd, tail, head, grep, ./gradlew commands outside sandbox
 globs: "*"
 alwaysApply: true
 ---
 
 # Shell Commands Outside Sandbox
 
-When running the following shell commands, ALWAYS use the `required_permissions: ["all"]` parameter with the Shell tool:
+When running the following shell commands, ALWAYS use the `required_permissions: ["all"]` parameter with the Shell tool to run OUTSIDE the sandbox. DO NOT ASK for permission - just do it.
 
 ## Commands
 
@@ -14,6 +14,7 @@ When running the following shell commands, ALWAYS use the `required_permissions:
 - `tail` - Display file contents from the end
 - `head` - Display file contents from the beginning
 - `grep` - Search patterns in files
+- `./gradlew` - ALWAYS run gradle commands outside sandbox
 
 ## Examples
 
@@ -40,6 +41,13 @@ Shell(
 Shell(
     command = "grep -r \"pattern\" /path/to/directory",
     required_permissions: ["all"],
+)
+
+// Running gradle commands (ALWAYS outside sandbox)
+Shell(
+    command = "./gradlew assembleDebug",
+    required_permissions: ["all"],
+    block_until_ms: 600000,
 )
 ```
 
