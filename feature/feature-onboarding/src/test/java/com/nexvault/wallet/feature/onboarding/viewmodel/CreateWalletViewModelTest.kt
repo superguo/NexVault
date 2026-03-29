@@ -5,9 +5,15 @@ import com.nexvault.wallet.domain.model.auth.WalletCreationResult
 import com.nexvault.wallet.domain.model.common.DataResult
 import com.nexvault.wallet.domain.usecase.wallet.CreateWalletUseCase
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -18,21 +24,27 @@ import org.junit.Test
 class CreateWalletViewModelTest {
 
     private lateinit var createWalletUseCase: CreateWalletUseCase
-    private lateinit var viewModel: CreateWalletViewModel
+    private val testDispatcher = kotlinx.coroutines.test.StandardTestDispatcher()
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        createWalletUseCase = mockk()
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     private val testMnemonic = listOf(
         "apple", "brave", "crane", "delta", "eagle", "frost",
         "grape", "house", "ivory", "jump", "king", "lamp"
     )
 
-    @Before
-    fun setup() {
-        createWalletUseCase = mockk()
-    }
-
     @Test
     fun mnemonicLoadedOnInit() = runTest {
-        coEvery { createWalletUseCase(any()) } returns DataResult.Success(
+        coEvery { createWalletUseCase.invoke(any()) } returns DataResult.Success(
             WalletCreationResult(
                 walletId = "abc",
                 address = "0x1234...abcd",
@@ -40,7 +52,9 @@ class CreateWalletViewModelTest {
             )
         )
 
-        viewModel = CreateWalletViewModel(createWalletUseCase)
+        val viewModel = CreateWalletViewModel(createWalletUseCase)
+
+        advanceUntilIdle()
 
         val state = viewModel.uiState.value
         assertEquals(12, state.mnemonicWords.size)
@@ -51,12 +65,14 @@ class CreateWalletViewModelTest {
 
     @Test
     fun creationError() = runTest {
-        coEvery { createWalletUseCase(any()) } returns DataResult.Error(
+        coEvery { createWalletUseCase.invoke(any()) } returns DataResult.Error(
             exception = Exception("Encryption failed"),
             message = "Encryption failed"
         )
 
-        viewModel = CreateWalletViewModel(createWalletUseCase)
+        val viewModel = CreateWalletViewModel(createWalletUseCase)
+
+        advanceUntilIdle()
 
         val state = viewModel.uiState.value
         assertTrue(state.error?.contains("Encryption failed") == true)
@@ -66,7 +82,7 @@ class CreateWalletViewModelTest {
 
     @Test
     fun acknowledgeTogglesState() = runTest {
-        coEvery { createWalletUseCase(any()) } returns DataResult.Success(
+        coEvery { createWalletUseCase.invoke(any()) } returns DataResult.Success(
             WalletCreationResult(
                 walletId = "abc",
                 address = "0x1234",
@@ -74,7 +90,9 @@ class CreateWalletViewModelTest {
             )
         )
 
-        viewModel = CreateWalletViewModel(createWalletUseCase)
+        val viewModel = CreateWalletViewModel(createWalletUseCase)
+
+        advanceUntilIdle()
 
         assertFalse(viewModel.uiState.value.isAcknowledged)
 
@@ -87,7 +105,7 @@ class CreateWalletViewModelTest {
 
     @Test
     fun continueEmitsNavigationEvent() = runTest {
-        coEvery { createWalletUseCase(any()) } returns DataResult.Success(
+        coEvery { createWalletUseCase.invoke(any()) } returns DataResult.Success(
             WalletCreationResult(
                 walletId = "abc",
                 address = "0x1234",
@@ -95,7 +113,9 @@ class CreateWalletViewModelTest {
             )
         )
 
-        viewModel = CreateWalletViewModel(createWalletUseCase)
+        val viewModel = CreateWalletViewModel(createWalletUseCase)
+
+        advanceUntilIdle()
 
         viewModel.navigationEvent.test {
             viewModel.onContinueClicked()
@@ -109,7 +129,7 @@ class CreateWalletViewModelTest {
     @Test
     fun retryAfterErrorCreatesNewWallet() = runTest {
         var callCount = 0
-        coEvery { createWalletUseCase(any()) } answers {
+        coEvery { createWalletUseCase.invoke(any()) } answers {
             callCount++
             if (callCount == 1) {
                 DataResult.Error(exception = Exception("First failure"), message = "First failure")
@@ -124,11 +144,15 @@ class CreateWalletViewModelTest {
             }
         }
 
-        viewModel = CreateWalletViewModel(createWalletUseCase)
+        val viewModel = CreateWalletViewModel(createWalletUseCase)
+
+        advanceUntilIdle()
 
         assertTrue(viewModel.uiState.value.error != null)
 
         viewModel.onRetryClicked()
+
+        advanceUntilIdle()
 
         assertNull(viewModel.uiState.value.error)
         assertEquals(2, callCount)

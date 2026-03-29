@@ -19,27 +19,14 @@ import javax.inject.Inject
 
 /**
  * ViewModel for the Verify Mnemonic screen.
- *
- * Receives the walletId via SavedStateHandle (navigation argument).
- * Loads the mnemonic from the repository, shuffles a copy for verification.
- * User taps words in the correct order. If all words are selected correctly,
- * the Confirm button becomes enabled.
- *
- * On incorrect selection, shows an error state with shake animation trigger,
- * then resets after a short delay.
  */
 @HiltViewModel
 class VerifyMnemonicViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val getMnemonicForBackupUseCase: GetMnemonicForBackupUseCase,
+    private val savedStateHandle: SavedStateHandle,
+    internal val getMnemonicForBackupUseCase: GetMnemonicForBackupUseCase,
 ) : ViewModel() {
 
-    // Constructor for testing purposes
-    constructor(
-        savedStateHandle: SavedStateHandle,
-        getMnemonicForBackupUseCase: GetMnemonicForBackupUseCase,
-        dummy: Unit,
-    ) : this(savedStateHandle, getMnemonicForBackupUseCase)
+    private val walletId: String = savedStateHandle.get<String>("walletId") ?: ""
 
     data class UiState(
         val originalWords: List<String> = emptyList(),
@@ -55,8 +42,6 @@ class VerifyMnemonicViewModel @Inject constructor(
     sealed interface NavigationEvent {
         data object NavigateToSetPin : NavigationEvent
     }
-
-    private val walletId: String = savedStateHandle.get<String>("walletId") ?: ""
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -112,7 +97,6 @@ class VerifyMnemonicViewModel @Inject constructor(
             val newAvailable = currentState.availableWords.toMutableList().apply {
                 remove(word)
             }
-
             val isComplete = newSelected.size == currentState.originalWords.size
 
             _uiState.update {
@@ -125,7 +109,6 @@ class VerifyMnemonicViewModel @Inject constructor(
             }
         } else {
             _uiState.update { it.copy(isError = true) }
-
             viewModelScope.launch {
                 delay(1500)
                 resetVerification()

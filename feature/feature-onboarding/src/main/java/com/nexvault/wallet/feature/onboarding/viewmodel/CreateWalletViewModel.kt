@@ -18,14 +18,10 @@ import javax.inject.Inject
 
 /**
  * ViewModel for the Create Wallet screen.
- *
- * On initialization, calls CreateWalletUseCase to generate a new wallet.
- * The mnemonic words are held in state for display.
- * User must acknowledge (checkbox) before proceeding to verification.
  */
 @HiltViewModel
 class CreateWalletViewModel @Inject constructor(
-    private val createWalletUseCase: CreateWalletUseCase,
+    internal val createWalletUseCase: CreateWalletUseCase,
 ) : ViewModel() {
 
     data class UiState(

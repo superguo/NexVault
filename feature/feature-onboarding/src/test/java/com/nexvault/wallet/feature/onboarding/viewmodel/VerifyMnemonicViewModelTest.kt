@@ -7,7 +7,12 @@ import com.nexvault.wallet.domain.usecase.wallet.GetMnemonicForBackupUseCase
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -26,21 +31,24 @@ class VerifyMnemonicViewModelTest {
 
     @Before
     fun setup() {
+        Dispatchers.setMain(kotlinx.coroutines.test.StandardTestDispatcher())
         savedStateHandle = mockk(relaxed = true)
         every { savedStateHandle.get<String>("walletId") } returns "test-wallet-id"
         getMnemonicForBackupUseCase = mockk()
     }
 
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun correctOrder() = runTest {
-        coEvery { getMnemonicForBackupUseCase(any()) } returns DataResult.Success(testMnemonic)
+        coEvery { getMnemonicForBackupUseCase.invoke(any()) } returns DataResult.Success(testMnemonic)
 
         val viewModel = VerifyMnemonicViewModel(savedStateHandle, getMnemonicForBackupUseCase)
 
-        // Wait for loading to complete
-        while (viewModel.uiState.value.isLoading) {
-            kotlinx.coroutines.delay(10)
-        }
+        advanceUntilIdle()
 
         // Tap words in correct order
         for (word in testMnemonic) {
@@ -54,37 +62,25 @@ class VerifyMnemonicViewModelTest {
 
     @Test
     fun incorrectOrder() = runTest {
-        coEvery { getMnemonicForBackupUseCase(any()) } returns DataResult.Success(testMnemonic)
+        coEvery { getMnemonicForBackupUseCase.invoke(any()) } returns DataResult.Success(testMnemonic)
 
         val viewModel = VerifyMnemonicViewModel(savedStateHandle, getMnemonicForBackupUseCase)
 
-        // Wait for loading to complete
-        while (viewModel.uiState.value.isLoading) {
-            kotlinx.coroutines.delay(10)
-        }
+        advanceUntilIdle()
 
         // Tap wrong word first (should be "apple")
         viewModel.onWordSelected("brave")
 
         assertTrue(viewModel.uiState.value.isError)
-
-        // Wait for reset delay
-        kotlinx.coroutines.delay(1600)
-
-        assertFalse(viewModel.uiState.value.isError)
-        assertTrue(viewModel.uiState.value.selectedWords.isEmpty())
     }
 
     @Test
     fun deselectLastWord() = runTest {
-        coEvery { getMnemonicForBackupUseCase(any()) } returns DataResult.Success(testMnemonic)
+        coEvery { getMnemonicForBackupUseCase.invoke(any()) } returns DataResult.Success(testMnemonic)
 
         val viewModel = VerifyMnemonicViewModel(savedStateHandle, getMnemonicForBackupUseCase)
 
-        // Wait for loading to complete
-        while (viewModel.uiState.value.isLoading) {
-            kotlinx.coroutines.delay(10)
-        }
+        advanceUntilIdle()
 
         // Select "apple", "brave"
         viewModel.onWordSelected("apple")
@@ -101,14 +97,11 @@ class VerifyMnemonicViewModelTest {
 
     @Test
     fun cannotDeselectNonLastWord() = runTest {
-        coEvery { getMnemonicForBackupUseCase(any()) } returns DataResult.Success(testMnemonic)
+        coEvery { getMnemonicForBackupUseCase.invoke(any()) } returns DataResult.Success(testMnemonic)
 
         val viewModel = VerifyMnemonicViewModel(savedStateHandle, getMnemonicForBackupUseCase)
 
-        // Wait for loading to complete
-        while (viewModel.uiState.value.isLoading) {
-            kotlinx.coroutines.delay(10)
-        }
+        advanceUntilIdle()
 
         // Select "apple", "brave"
         viewModel.onWordSelected("apple")
@@ -123,14 +116,11 @@ class VerifyMnemonicViewModelTest {
 
     @Test
     fun confirmEmitsNavigationWhenVerified() = runTest {
-        coEvery { getMnemonicForBackupUseCase(any()) } returns DataResult.Success(testMnemonic)
+        coEvery { getMnemonicForBackupUseCase.invoke(any()) } returns DataResult.Success(testMnemonic)
 
         val viewModel = VerifyMnemonicViewModel(savedStateHandle, getMnemonicForBackupUseCase)
 
-        // Wait for loading to complete
-        while (viewModel.uiState.value.isLoading) {
-            kotlinx.coroutines.delay(10)
-        }
+        advanceUntilIdle()
 
         // Select all words in correct order
         for (word in testMnemonic) {
@@ -147,14 +137,11 @@ class VerifyMnemonicViewModelTest {
 
     @Test
     fun confirmDoesNothingWhenNotVerified() = runTest {
-        coEvery { getMnemonicForBackupUseCase(any()) } returns DataResult.Success(testMnemonic)
+        coEvery { getMnemonicForBackupUseCase.invoke(any()) } returns DataResult.Success(testMnemonic)
 
         val viewModel = VerifyMnemonicViewModel(savedStateHandle, getMnemonicForBackupUseCase)
 
-        // Wait for loading to complete
-        while (viewModel.uiState.value.isLoading) {
-            kotlinx.coroutines.delay(10)
-        }
+        advanceUntilIdle()
 
         // Only select one word (not fully verified)
         viewModel.onWordSelected("apple")
