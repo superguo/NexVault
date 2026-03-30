@@ -1,0 +1,353 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "cb9c36619d293fdb1ab1e9470c6e8784",
+    "entities": [
+      {
+        "tableName": "tokens",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contractAddress` TEXT NOT NULL, `chainId` INTEGER NOT NULL, `symbol` TEXT NOT NULL, `name` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `logoUrl` TEXT, `balance` TEXT NOT NULL, `fiatPrice` REAL, `fiatValue` REAL, `priceChange24h` REAL, `isCustom` INTEGER NOT NULL, `coinGeckoId` TEXT, `sortOrder` INTEGER NOT NULL, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`contractAddress`, `chainId`))",
+        "fields": [
+          {
+            "fieldPath": "contractAddress",
+            "columnName": "contractAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chainId",
+            "columnName": "chainId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "symbol",
+            "columnName": "symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "decimals",
+            "columnName": "decimals",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "logoUrl",
+            "columnName": "logoUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "balance",
+            "columnName": "balance",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fiatPrice",
+            "columnName": "fiatPrice",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiatValue",
+            "columnName": "fiatValue",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "priceChange24h",
+            "columnName": "priceChange24h",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "isCustom",
+            "columnName": "isCustom",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coinGeckoId",
+            "columnName": "coinGeckoId",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "sortOrder",
+            "columnName": "sortOrder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "contractAddress",
+            "chainId"
+          ]
+        }
+      },
+      {
+        "tableName": "transactions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`txHash` TEXT NOT NULL, `chainId` INTEGER NOT NULL, `fromAddress` TEXT NOT NULL, `toAddress` TEXT NOT NULL, `value` TEXT NOT NULL, `gasUsed` TEXT, `gasPrice` TEXT, `tokenSymbol` TEXT, `tokenContractAddress` TEXT, `tokenDecimals` INTEGER, `blockNumber` INTEGER NOT NULL, `timestamp` INTEGER NOT NULL, `status` INTEGER NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY(`txHash`, `chainId`))",
+        "fields": [
+          {
+            "fieldPath": "txHash",
+            "columnName": "txHash",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chainId",
+            "columnName": "chainId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromAddress",
+            "columnName": "fromAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "toAddress",
+            "columnName": "toAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "value",
+            "columnName": "value",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gasUsed",
+            "columnName": "gasUsed",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "gasPrice",
+            "columnName": "gasPrice",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tokenSymbol",
+            "columnName": "tokenSymbol",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tokenContractAddress",
+            "columnName": "tokenContractAddress",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tokenDecimals",
+            "columnName": "tokenDecimals",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "blockNumber",
+            "columnName": "blockNumber",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "txHash",
+            "chainId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_transactions_chainId_fromAddress",
+            "unique": false,
+            "columnNames": [
+              "chainId",
+              "fromAddress"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_chainId_fromAddress` ON `${TABLE_NAME}` (`chainId`, `fromAddress`)"
+          },
+          {
+            "name": "index_transactions_chainId_toAddress",
+            "unique": false,
+            "columnNames": [
+              "chainId",
+              "toAddress"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_chainId_toAddress` ON `${TABLE_NAME}` (`chainId`, `toAddress`)"
+          },
+          {
+            "name": "index_transactions_timestamp",
+            "unique": false,
+            "columnNames": [
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
+          },
+          {
+            "name": "index_transactions_chainId_status",
+            "unique": false,
+            "columnNames": [
+              "chainId",
+              "status"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_chainId_status` ON `${TABLE_NAME}` (`chainId`, `status`)"
+          }
+        ]
+      },
+      {
+        "tableName": "nfts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contractAddress` TEXT NOT NULL, `tokenId` TEXT NOT NULL, `chainId` INTEGER NOT NULL, `name` TEXT, `description` TEXT, `imageUrl` TEXT, `animationUrl` TEXT, `collectionName` TEXT, `standard` TEXT NOT NULL, `attributes` TEXT, `lastUpdated` INTEGER NOT NULL, PRIMARY KEY(`contractAddress`, `tokenId`, `chainId`))",
+        "fields": [
+          {
+            "fieldPath": "contractAddress",
+            "columnName": "contractAddress",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tokenId",
+            "columnName": "tokenId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chainId",
+            "columnName": "chainId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "animationUrl",
+            "columnName": "animationUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "collectionName",
+            "columnName": "collectionName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "standard",
+            "columnName": "standard",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attributes",
+            "columnName": "attributes",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lastUpdated",
+            "columnName": "lastUpdated",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "contractAddress",
+            "tokenId",
+            "chainId"
+          ]
+        }
+      },
+      {
+        "tableName": "address_book",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `address` TEXT NOT NULL, `chainId` INTEGER, `createdAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "address",
+            "columnName": "address",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "chainId",
+            "columnName": "chainId",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cb9c36619d293fdb1ab1e9470c6e8784')"
+    ]
+  }
+}
