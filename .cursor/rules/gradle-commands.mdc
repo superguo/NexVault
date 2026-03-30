@@ -1,40 +1,11 @@
 ---
-description: Run gradlew commands outside sandbox with all permissions
+description: Gradle commands have moved to shell-commands.mdc
 globs: "*.gradle.kts"
-alwaysApply: true
+alwaysApply: false
 ---
 
-# Gradle Commands Outside Sandbox
+# Gradle Commands
 
-When running `./gradlew` commands, ALWAYS execute them directly without asking the user for permission. The system requires full permissions to function properly, so just run the command.
+The `./gradlew` command is now documented in `.cursor/rules/shell-commands.mdc`.
 
-When running `./gradlew` commands, ALWAYS use the `required_permissions: ["all"]` parameter with the Shell tool to run outside the sandbox.
-
-## Examples
-
-```kotlin
-// Running gradle compile (outside sandbox)
-Shell(
-    command = "./gradlew :domain:compileKotlin",
-    required_permissions: ["all"],
-    block_until_ms: 300000,
-)
-
-// Running gradle tests (outside sandbox)
-Shell(
-    command = "./gradlew :domain:test",
-    required_permissions: ["all"],
-    block_until_ms: 300000,
-)
-
-// Running assembleDebug (outside sandbox)
-Shell(
-    command = "./gradlew assembleDebug",
-    required_permissions: ["all"],
-    block_until_ms: 600000,
-)
-```
-
-## Why This Is Needed
-
-The sandbox restricts process spawning and network access. Gradle wrapper downloads dependencies and spawns JVM processes, which require permissions outside the sandbox. Without `required_permissions: ["all"]`, commands will fail with "Operation not permitted" or network errors.
+This file is kept for reference but `shell-commands.mdc` is the authoritative source for running gradle commands.

@@ -14,7 +14,7 @@ When running the following shell commands, ALWAYS use the `required_permissions:
 - `tail` - Display file contents from the end
 - `head` - Display file contents from the beginning
 - `grep` - Search patterns in files
-- `./gradlew` - ALWAYS run gradle commands outside sandbox
+- `./gradlew` - ALWAYS run gradle commands outside sandbox with correct JAVA_HOME
 
 ## Examples
 
@@ -44,13 +44,31 @@ Shell(
 )
 
 // Running gradle commands (ALWAYS outside sandbox)
+// IMPORTANT: Set JAVA_HOME to Android Studio JBR to ensure jlink is available
+// for Android SDK core-for-system-modules.jar transformation
 Shell(
-    command = "./gradlew assembleDebug",
+    command = "JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ./gradlew assembleDebug",
     required_permissions: ["all"],
     block_until_ms: 600000,
+)
+
+// Running gradle tests with correct JAVA_HOME
+Shell(
+    command = "JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ./gradlew :domain:test",
+    required_permissions: ["all"],
+    block_until_ms: 300000,
+)
+
+// Running gradle compile with correct JAVA_HOME
+Shell(
+    command = "JAVA_HOME=\"/Applications/Android Studio.app/Contents/jbr/Contents/Home\" ./gradlew :core:core-database:assembleDebug",
+    required_permissions: ["all"],
+    block_until_ms: 300000,
 )
 ```
 
 ## Why This Is Needed
 
-The sandbox restricts process spawning and certain shell operations. These commonly-used commands may require permissions outside the sandbox to function properly. Without `required_permissions: ["all"]`, commands may fail with "Operation not permitted" errors.
+The sandbox restricts process spawning and certain shell operations. These commonly-used commands may require permissions outside the sandbox to function properly. Without `required_permissions: ["all"]`, commands will fail with "Operation not permitted" errors.
+
+The JAVA_HOME environment variable is required because Android SDK's `core-for-system-modules.jar` transformation requires the `jlink` tool. The Cursor Java extension bundles an incomplete JDK that lacks `jlink`, so we must use Android Studio's JDK instead.
