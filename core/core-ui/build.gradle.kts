@@ -67,6 +67,9 @@ dependencies {
     implementation(libs.vico.compose)
     implementation(libs.kotlinx.collections.immutable)
 
+    // Domain layer
+    implementation(project(":domain"))
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
