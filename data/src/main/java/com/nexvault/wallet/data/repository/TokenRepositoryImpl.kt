@@ -52,6 +52,12 @@ class TokenRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun observeToken(chainId: Int, contractAddress: String): Flow<Token?> {
+        return tokenDao.observeToken(contractAddress, chainId).map { entity ->
+            entity?.toDomain()
+        }
+    }
+
     override suspend fun refreshBalances(chainId: Int, address: String): DataResult<Unit> {
         if (!refreshMutex.tryLock()) return DataResult.Success(Unit)
         return try {

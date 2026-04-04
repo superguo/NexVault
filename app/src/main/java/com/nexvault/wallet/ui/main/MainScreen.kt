@@ -23,12 +23,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.navigation.navigation
 import com.nexvault.wallet.core.ui.theme.NexVaultTheme
 import com.nexvault.wallet.feature.home.HomeScreen
+import com.nexvault.wallet.feature.tokens.TokenDetailScreen
 import com.nexvault.wallet.navigation.MainTab
 
 /**
@@ -66,9 +70,17 @@ fun MainScreen(
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
                 tabs.forEach { tab ->
-                    val isSelected = currentDestination?.hierarchy?.any {
-                        it.route == tab.route
-                    } == true
+                    val isSelected = when (tab) {
+                        MainTab.HOME -> {
+                            val r = currentDestination?.route.orEmpty()
+                            r == "home_dashboard" ||
+                                r.startsWith("token_detail") ||
+                                currentDestination?.hierarchy?.any { it.route == MainTab.HOME.route } == true
+                        }
+                        else -> currentDestination?.hierarchy?.any {
+                            it.route == tab.route
+                        } == true
+                    }
 
                     NavigationBarItem(
                         selected = isSelected,
@@ -110,13 +122,34 @@ fun MainScreen(
             startDestination = MainTab.HOME.route,
             modifier = Modifier.padding(innerPadding),
         ) {
-            composable(MainTab.HOME.route) {
-                HomeScreen(
-                    onNavigateToTokenDetail = { _, _ -> },
-                    onNavigateToSend = { },
-                    onNavigateToReceive = { },
-                    onNavigateToSwap = { },
-                )
+            navigation(
+                route = MainTab.HOME.route,
+                startDestination = "home_dashboard",
+            ) {
+                composable("home_dashboard") {
+                    HomeScreen(
+                        onNavigateToTokenDetail = { contractAddress, chainId ->
+                            tabNavController.navigate("token_detail/$contractAddress/$chainId")
+                        },
+                        onNavigateToSend = { },
+                        onNavigateToReceive = { },
+                        onNavigateToSwap = { },
+                    )
+                }
+                composable(
+                    route = "token_detail/{contractAddress}/{chainId}",
+                    arguments = listOf(
+                        navArgument("contractAddress") { type = NavType.StringType },
+                        navArgument("chainId") { type = NavType.IntType },
+                    ),
+                ) {
+                    TokenDetailScreen(
+                        onNavigateBack = { tabNavController.popBackStack() },
+                        onNavigateToSend = { _, _ -> },
+                        onNavigateToReceive = { },
+                        onNavigateToHistory = { _, _ -> },
+                    )
+                }
             }
 
             composable(MainTab.HISTORY.route) {

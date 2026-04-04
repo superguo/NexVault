@@ -3,10 +3,12 @@ package com.nexvault.wallet.data.di
 import com.nexvault.wallet.data.repository.AuthRepositoryImpl
 import com.nexvault.wallet.data.repository.ChainRepositoryImpl
 import com.nexvault.wallet.data.repository.TokenRepositoryImpl
+import com.nexvault.wallet.data.repository.TransactionRepositoryImpl
 import com.nexvault.wallet.data.repository.WalletRepositoryImpl
 import com.nexvault.wallet.domain.repository.AuthRepository
 import com.nexvault.wallet.domain.repository.ChainRepository
 import com.nexvault.wallet.domain.repository.TokenRepository
+import com.nexvault.wallet.domain.repository.TransactionRepository
 import com.nexvault.wallet.domain.repository.WalletRepository
 import dagger.Binds
 import dagger.Module
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindTokenRepository(
         impl: TokenRepositoryImpl,
     ): TokenRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTransactionRepository(
+        impl: TransactionRepositoryImpl,
+    ): TransactionRepository
 }

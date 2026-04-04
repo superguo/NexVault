@@ -1,6 +1,5 @@
 package com.nexvault.wallet.feature.home
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,11 +41,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,13 +48,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.nexvault.wallet.core.ui.components.ChainSelectorDropdown
 import com.nexvault.wallet.core.ui.components.NexVaultCard
+import com.nexvault.wallet.core.ui.components.SimpleLineChart
 import com.nexvault.wallet.core.ui.components.TokenIcon
+import com.nexvault.wallet.core.ui.util.formatFiatValue
+import com.nexvault.wallet.core.ui.util.formatTokenBalance
 import com.nexvault.wallet.core.ui.mapper.toChainUi
 import com.nexvault.wallet.domain.model.chain.Chain
 import com.nexvault.wallet.domain.model.token.PricePoint
 import com.nexvault.wallet.domain.model.token.Token
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 /**
  * Home dashboard: portfolio value, chart, token list, and quick actions.
@@ -319,45 +315,6 @@ private fun PortfolioChartSection(
     }
 }
 
-/**
- * Simple line chart drawn on Canvas.
- */
-@Composable
-fun SimpleLineChart(
-    dataPoints: List<PricePoint>,
-    modifier: Modifier = Modifier,
-    lineColor: Color,
-) {
-    if (dataPoints.size < 2) return
-
-    val minValue = dataPoints.minOf { it.value }
-    val maxValue = dataPoints.maxOf { it.value }
-    val valueRange = (maxValue - minValue).coerceAtLeast(0.01)
-
-    Canvas(modifier = modifier.padding(8.dp)) {
-        val stepX = size.width / (dataPoints.size - 1)
-        val path = Path()
-        dataPoints.forEachIndexed { index, point ->
-            val x = index * stepX
-            val y = size.height - ((point.value - minValue) / valueRange * size.height).toFloat()
-            if (index == 0) {
-                path.moveTo(x, y)
-            } else {
-                path.lineTo(x, y)
-            }
-        }
-        drawPath(
-            path = path,
-            color = lineColor,
-            style = Stroke(
-                width = 2.dp.toPx(),
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round,
-            ),
-        )
-    }
-}
-
 @Composable
 private fun QuickActionsRow(
     onSend: () -> Unit,
@@ -507,17 +464,5 @@ private fun TokenRowShimmer() {
                     .background(MaterialTheme.colorScheme.surfaceVariant),
             )
         }
-    }
-}
-
-private fun formatFiatValue(value: Double): String {
-    return "$${String.format("%,.2f", value)}"
-}
-
-private fun formatTokenBalance(balance: BigDecimal): String {
-    return if (balance.scale() > 6) {
-        balance.setScale(6, RoundingMode.DOWN).stripTrailingZeros().toPlainString()
-    } else {
-        balance.stripTrailingZeros().toPlainString()
     }
 }

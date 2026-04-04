@@ -54,6 +54,20 @@ interface TokenRepository {
     ): DataResult<Token>
 
     /**
+     * Observes a single token by chain and contract address.
+     *
+     * Emits whenever the corresponding Room row changes (e.g. after balance refresh).
+     *
+     * @param chainId The chain the token is on
+     * @param contractAddress `"native"` for the native coin, or ERC-20 contract address
+     * @return [Flow] emitting the current [Token] or null if not in the database
+     */
+    fun observeToken(
+        chainId: Int,
+        contractAddress: String,
+    ): Flow<Token?>
+
+    /**
      * Get price chart for a specific token.
      */
     suspend fun getTokenPriceChart(

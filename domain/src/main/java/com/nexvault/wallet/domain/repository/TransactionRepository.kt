@@ -63,6 +63,21 @@ interface TransactionRepository {
     ): DataResult<Unit>
 
     /**
+     * Returns recent transactions involving [address] for a specific token.
+     *
+     * @param chainId The chain ID
+     * @param address The wallet address (lowercase matching is applied in the DAO)
+     * @param tokenContractAddress ERC-20 contract address, or null for native coin transfers only
+     * @param limit Max rows to return (newest first)
+     */
+    suspend fun getRecentTransactionsForToken(
+        chainId: Int,
+        address: String,
+        tokenContractAddress: String?,
+        limit: Int = 5,
+    ): List<Transaction>
+
+    /**
      * Get a single transaction's full details.
      */
     suspend fun getTransactionDetail(
