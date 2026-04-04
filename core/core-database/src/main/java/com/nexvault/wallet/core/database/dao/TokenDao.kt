@@ -52,6 +52,24 @@ interface TokenDao {
     fun getTokensByChain(chainId: Int): Flow<List<TokenEntity>>
 
     /**
+     * One-shot fetch of all tokens for a chain (same ordering as [getTokensByChain] without Flow).
+     */
+    @Query(
+        """
+        SELECT * FROM tokens
+        WHERE chainId = :chainId
+        ORDER BY COALESCE(fiatValue, 0) DESC, sortOrder ASC
+        """,
+    )
+    suspend fun getTokensByChainOnce(chainId: Int): List<TokenEntity>
+
+    /**
+     * Number of token rows stored for a chain (used to detect whether default list was seeded).
+     */
+    @Query("SELECT COUNT(*) FROM tokens WHERE chainId = :chainId")
+    suspend fun getTokenCountByChain(chainId: Int): Int
+
+    /**
      * Gets a single token by its contract address and chain.
      *
      * @param contractAddress Token contract address or "native"

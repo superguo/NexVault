@@ -4,6 +4,10 @@ import java.math.BigDecimal
 
 /**
  * Domain model for a token (native coin or ERC-20).
+ *
+ * @property contractAddress `"native"` for native coins, or ERC-20 contract address (lowercase).
+ * @property coinGeckoId CoinGecko coin id for price APIs; null for some custom tokens.
+ * @property isCustom Whether the user added this token manually.
  */
 data class Token(
     val contractAddress: String,
@@ -16,6 +20,8 @@ data class Token(
     val fiatPrice: Double?,
     val fiatValue: Double?,
     val priceChange24h: Double?,
+    val coinGeckoId: String? = null,
+    val isCustom: Boolean = false,
 ) {
     val isNative: Boolean get() = contractAddress == NATIVE_TOKEN_ADDRESS
 

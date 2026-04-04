@@ -2,6 +2,9 @@ package com.nexvault.wallet.domain.model.chain
 
 /**
  * Represents a blockchain network.
+ *
+ * @property nativeCoinName Display name for the chain native asset.
+ * @property nativeCoinCoinGeckoId CoinGecko id for the native coin (used for charts and prices).
  */
 data class Chain(
     val chainId: Int,
@@ -11,6 +14,10 @@ data class Chain(
     val explorerUrl: String,
     val isTestnet: Boolean,
     val iconResName: String?,
+    /** Display name for the chain's native coin (e.g. "Ethereum"). */
+    val nativeCoinName: String,
+    /** CoinGecko API id for the native coin (e.g. "ethereum"). */
+    val nativeCoinCoinGeckoId: String,
 )
 
 /**
@@ -25,6 +32,8 @@ object SupportedChains {
         explorerUrl = "https://etherscan.io",
         isTestnet = false,
         iconResName = "ic_ethereum",
+        nativeCoinName = "Ethereum",
+        nativeCoinCoinGeckoId = "ethereum",
     )
 
     val ETHEREUM_SEPOLIA = Chain(
@@ -35,6 +44,8 @@ object SupportedChains {
         explorerUrl = "https://sepolia.etherscan.io",
         isTestnet = true,
         iconResName = "ic_ethereum",
+        nativeCoinName = "Sepolia ETH",
+        nativeCoinCoinGeckoId = "ethereum",
     )
 
     val BSC_MAINNET = Chain(
@@ -45,6 +56,8 @@ object SupportedChains {
         explorerUrl = "https://bscscan.com",
         isTestnet = false,
         iconResName = "ic_bnb",
+        nativeCoinName = "BNB",
+        nativeCoinCoinGeckoId = "binancecoin",
     )
 
     val POLYGON_MAINNET = Chain(
@@ -55,6 +68,8 @@ object SupportedChains {
         explorerUrl = "https://polygonscan.com",
         isTestnet = false,
         iconResName = "ic_polygon",
+        nativeCoinName = "Polygon",
+        nativeCoinCoinGeckoId = "matic-network",
     )
 
     fun all(): List<Chain> = listOf(

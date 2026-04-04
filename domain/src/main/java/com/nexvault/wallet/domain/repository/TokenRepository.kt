@@ -61,4 +61,10 @@ interface TokenRepository {
         contractAddress: String,
         days: Int,
     ): DataResult<List<PricePoint>>
+
+    /**
+     * Seeds the database with default popular tokens for a chain (no-op if already seeded).
+     * Called after wallet creation; balances stay zero until [refreshBalances].
+     */
+    suspend fun seedDefaultTokens(chainId: Int): DataResult<Unit>
 }

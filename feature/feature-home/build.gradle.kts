@@ -71,6 +71,9 @@ dependencies {
     // Navigation
     implementation(libs.bundles.compose.navigation)
 
+    // Images
+    implementation(libs.coil.compose)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

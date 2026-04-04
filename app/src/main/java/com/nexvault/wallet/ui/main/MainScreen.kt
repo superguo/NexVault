@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.nexvault.wallet.core.ui.theme.NexVaultTheme
+import com.nexvault.wallet.feature.home.HomeScreen
 import com.nexvault.wallet.navigation.MainTab
 
 /**
@@ -110,10 +111,11 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(MainTab.HOME.route) {
-                PlaceholderTabScreen(
-                    tabName = "Home",
-                    description = "Portfolio dashboard, token balances, and chart.\nComing in Phase 2.",
-                    emoji = "\uD83C\uDFE0",
+                HomeScreen(
+                    onNavigateToTokenDetail = { _, _ -> },
+                    onNavigateToSend = { },
+                    onNavigateToReceive = { },
+                    onNavigateToSwap = { },
                 )
             }
 

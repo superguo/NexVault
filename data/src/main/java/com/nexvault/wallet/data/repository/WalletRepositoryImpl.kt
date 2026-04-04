@@ -20,6 +20,8 @@ import com.nexvault.wallet.domain.model.wallet.Account
 import com.nexvault.wallet.domain.model.wallet.Wallet
 import com.nexvault.wallet.domain.model.wallet.WalletType
 import com.nexvault.wallet.domain.model.auth.WalletCreationResult
+import com.nexvault.wallet.domain.model.chain.SupportedChains
+import com.nexvault.wallet.domain.repository.TokenRepository
 import com.nexvault.wallet.domain.repository.WalletRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -41,6 +43,7 @@ class WalletRepositoryImpl @Inject constructor(
     private val walletStore: WalletStore,
     private val securityPreferences: SecurityPreferencesDataStore,
     private val walletMetadataStore: WalletMetadataDataStore,
+    private val tokenRepository: TokenRepository,
 ) : WalletRepository {
 
     companion object {
@@ -86,6 +89,8 @@ class WalletRepositoryImpl @Inject constructor(
             securityPreferences.setActiveWalletId(walletId)
             securityPreferences.setActiveAccountIndex(0)
             securityPreferences.setWalletSetUp(true)
+
+            seedDefaultTokensForSupportedChains()
 
             val mnemonicWords = mnemonic.split(" ")
 
@@ -146,6 +151,8 @@ class WalletRepositoryImpl @Inject constructor(
             securityPreferences.setActiveAccountIndex(0)
             securityPreferences.setWalletSetUp(true)
 
+            seedDefaultTokensForSupportedChains()
+
             val mnemonicWords = mnemonic.split(" ")
 
             DataResult.Success(
@@ -200,6 +207,8 @@ class WalletRepositoryImpl @Inject constructor(
             securityPreferences.setActiveAccountIndex(0)
             securityPreferences.setWalletSetUp(true)
 
+            seedDefaultTokensForSupportedChains()
+
             DataResult.Success(
                 WalletCreationResult(
                     walletId = walletId,
@@ -211,6 +220,12 @@ class WalletRepositoryImpl @Inject constructor(
             DataResult.Error(
                 InvalidPrivateKeyException("Failed to import private key: ${e.message}"),
             )
+        }
+    }
+
+    private suspend fun seedDefaultTokensForSupportedChains() {
+        SupportedChains.all().forEach { chain ->
+            tokenRepository.seedDefaultTokens(chain.chainId)
         }
     }
 

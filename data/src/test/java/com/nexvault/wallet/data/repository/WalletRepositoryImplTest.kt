@@ -11,6 +11,7 @@ import com.nexvault.wallet.core.security.wallet.WalletStore
 import com.nexvault.wallet.domain.model.common.DataResult
 import com.nexvault.wallet.domain.model.common.InvalidMnemonicException
 import com.nexvault.wallet.domain.model.common.WalletNotFoundException
+import com.nexvault.wallet.domain.repository.TokenRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -31,6 +32,7 @@ class WalletRepositoryImplTest {
     private lateinit var walletStore: WalletStore
     private lateinit var securityPreferences: SecurityPreferencesDataStore
     private lateinit var walletMetadataStore: WalletMetadataDataStore
+    private lateinit var tokenRepository: TokenRepository
     private lateinit var repository: WalletRepositoryImpl
 
     @Before
@@ -40,13 +42,16 @@ class WalletRepositoryImplTest {
         walletStore = mockk(relaxed = true)
         securityPreferences = mockk(relaxed = true)
         walletMetadataStore = mockk(relaxed = true)
+        tokenRepository = mockk(relaxed = true)
+        coEvery { tokenRepository.seedDefaultTokens(any()) } returns DataResult.Success(Unit)
 
         repository = WalletRepositoryImpl(
             mnemonicManager,
             hdKeyManager,
             walletStore,
             securityPreferences,
-            walletMetadataStore
+            walletMetadataStore,
+            tokenRepository,
         )
     }
 
